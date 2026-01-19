@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Translator Pro | Voice & Text to Sign Language</title>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    
+    <!-- Load CWA files -->
+    <link rel="stylesheet" href="/static/cwa/cwasa.css" />
+    <script type="text/javascript" src="/static/cwa/allcsa.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-purple: #7c3aed;
+            --primary-purple-light: #8b5cf6;
+            --primary-purple-dark: #6d28d9;
+            --secondary-purple: #a78bfa;
+            --accent-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --light-bg: #f8fafc;
+            --dark-text: #1e293b;
+            --light-text: #64748b;
+            --white: #ffffff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f3e8ff 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            color: var(--dark-text);
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 100%;
+        }
+        
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .stats-container {
+            display: flex;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Avatar Panel */
+        .avatar-panel {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--accent-blue) 100%);
+            color: var(--white);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .avatar-container {
+            flex: 1;
+            background: var(--light-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 400px;
+        }
+        
+        #currentSign {
+            position: absolute;
+            top: 1.5rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--white);
+            background: rgba(124, 58, 237, 0.9);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            margin: 0 2rem;
+            display: none;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        
+        .CWASAAvatar {
+            width: 100%;
+            height: 100%;
+            max-height: 500px;
+        }
+        
+        /* Remove black borders from CWA avatar */
+.CWASAAvatar {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Target the avatar container */
+.av0 {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Remove any shadow or border from the avatar iframe/container */
+.CWASAAvatar > * {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Also try targeting the iframe directly */
+.CWASAAvatar iframe {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Remove any background container styling */
+.avatar-container {
+    background: transparent !important;
+}
+
+/* Ensure no borders on the avatar section */
+.avatar-panel, .avatar-container {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+        /* Controls Panel */
+        .controls-panel {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .controls-content {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        /* Input Section */
+        .input-section {
+            background: var(--light-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .input-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .input-mode {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(124, 58, 237, 0.1);
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+        
+        .mode-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--light-text);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: var(--primary-purple);
+            color: var(--white);
+        }
+        
+        #textInputContainer, #voiceInputContainer {
+            margin-top: 1rem;
+        }
+        
+        #voiceInputContainer {
+            display: none;
+        }
+        
+        .text-input-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        #glossInput {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            outline: none;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+        
+        #glossInput:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+        
+        .voice-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .voice-visualizer {
+            width: 100%;
+            height: 80px;
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .voice-wave {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+        
+        .voice-bar {
+            width: 4px;
+            background: var(--primary-purple);
+            border-radius: 2px;
+            transition: height 0.1s;
+        }
+        
+        .voice-status {
+            position: absolute;
+            color: var(--light-text);
+            font-weight: 500;
+        }
+        
+        .voice-btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            background: linear-gradient(135deg, var(--accent-pink) 0%, #db2777 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+        
+        .voice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .voice-btn.listening {
+            background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+            color: var(--white);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%);
+            color: var(--white);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error) 0%, #b91c1c 100%);
+            color: var(--white);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Speed Control */
+        .speed-section {
+            background: var(--light-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        
+        .speed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .speed-display {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .speed-value {
+            background: var(--primary-purple);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .speed-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .speed-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 0.75rem 0.5rem;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .speed-btn:hover {
+            border-color: var(--primary-purple);
+            transform: translateY(-2px);
+        }
+        
+        .speed-btn.active {
+            background: var(--primary-purple);
+            color: var(--white);
+            border-color: var(--primary-purple);
+        }
+        
+        .speed-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .speed-rate {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        /* Quick Examples */
+        .examples-section {
+            background: var(--light-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .example-btn {
+            padding: 0.75rem 1rem;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s;
+            color: var(--dark-text);
+        }
+        
+        .example-btn:hover {
+            background: var(--primary-purple);
+            color: var(--white);
+            border-color: var(--primary-purple);
+            transform: translateY(-2px);
+        }
+        
+        /* Status Section */
+        .status-section {
+            background: var(--light-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+        
+        #status {
+            padding: 1rem;
+            background: var(--white);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary-purple);
+            font-weight: 500;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Footer */
+        .app-footer {
+            background: var(--dark-text);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            margin-top: 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: var(--white);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .stats-container {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .main-content {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .controls-content {
+                padding: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+            
+            .examples-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text h1 {
+                font-size: 1.5rem;
+            }
+            
+            .panel-title {
+                font-size: 1.1rem;
+            }
+            
+            .examples-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Voice recognition animation */
+        .listening .voice-bar {
+            animation: wave 1s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { height: 20%; }
+            50% { height: 80%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>ASL Translator Pro</h1>
+                        <p>Voice & Text to American Sign Language</p>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-value" id="signCount">0</div>
+                        <div class="stat-label">Signs Loaded</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="speedDisplay">1.0x</div>
+                        <div class="stat-label">Current Speed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div class="stat-label">Voice Ready</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Avatar Panel -->
+            <section class="avatar-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-robot"></i>
+                        <span>3D Signing Avatar</span>
+                    </div>
+                    <div class="panel-actions">
+                        <i class="fas fa-expand-alt" style="cursor: pointer; opacity: 0.8;"></i>
+                    </div>
+                </div>
+                <div class="avatar-container">
+                    <div id="currentSign"></div>
+                    <div class="CWASAAvatar av0"></div>
+                </div>
+            </section>
+            
+            <!-- Controls Panel -->
+            <section class="controls-panel">
+                <div class="controls-content">
+                    <!-- Input Section -->
+                    <div class="input-section">
+                        <div class="input-header">
+                            <div class="input-title">
+                                <i class="fas fa-keyboard"></i>
+                                <span>Input Method</span>
+                            </div>
+                            <div class="input-mode">
+                                <button class="mode-btn active" onclick="setInputMode('text')">
+                                    <i class="fas fa-keyboard"></i> Text
+                                </button>
+                                <button class="mode-btn" onclick="setInputMode('voice')">
+                                    <i class="fas fa-microphone"></i> Voice
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Input -->
+                        <div id="textInputContainer">
+                            <div class="text-input-group">
+                                <input type="text" id="glossInput" 
+                                       placeholder="Type a sentence (e.g., 'Hello my name is Alex')..." 
+                                       list="signSuggestions" autocomplete="off" />
+                                <datalist id="signSuggestions"></datalist>
+                            </div>
+                        </div>
+                        
+                        <!-- Voice Input -->
+                        <div id="voiceInputContainer">
+                            <div class="voice-input-group">
+                                <div class="voice-visualizer">
+                                    <div class="voice-wave" id="voiceWave">
+                                        <!-- Voice bars will be generated here -->
+                                    </div>
+                                    <div class="voice-status" id="voiceStatus">
+                                        Click microphone to start speaking
+                                    </div>
+                                </div>
+                                <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceRecognition()">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Start Speaking</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="action-btn btn-primary" onclick="playGloss()">
+                                <i class="fas fa-play-circle"></i>
+                                <span>Sign Sentence</span>
+                            </button>
+                            <button class="action-btn btn-secondary" onclick="spellWord()">
+                                <i class="fas fa-spell-check"></i>
+                                <span>Spell All</span>
+                            </button>
+                            <button class="action-btn btn-danger" onclick="resetGloss()">
+                                <i class="fas fa-stop-circle"></i>
+                                <span>Stop & Reset</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Speed Control -->
+                    <div class="speed-section">
+                        <div class="speed-header">
+                            <div class="input-title">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Playback Speed</span>
+                            </div>
+                            <div class="speed-display">
+                                <span>Current:</span>
+                                <div class="speed-value" id="speedValue">1.0x</div>
+                            </div>
+                        </div>
+                        <div class="speed-buttons">
+                            <button class="speed-btn" data-speed="0.5" onclick="setSpeed(0.5)">
+                                <span class="speed-label">Very Slow</span>
+                                <span class="speed-rate">0.5x</span>
+                            </button>
+                            <button class="speed-btn" data-speed="0.75" onclick="setSpeed(0.75)">
+                                <span class="speed-label">Slow</span>
+                                <span class="speed-rate">0.75x</span>
+                            </button>
+                            <button class="speed-btn active" data-speed="1.0" onclick="setSpeed(1.0)">
+                                <span class="speed-label">Normal</span>
+                                <span class="speed-rate">1.0x</span>
+                            </button>
+                            <button class="speed-btn" data-speed="1.5" onclick="setSpeed(1.5)">
+                                <span class="speed-label">Fast</span>
+                                <span class="speed-rate">1.5x</span>
+                            </button>
+                            <button class="speed-btn" data-speed="2.0" onclick="setSpeed(2.0)">
+                                <span class="speed-label">Very Fast</span>
+                                <span class="speed-rate">2.0x</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Examples -->
+                    <div class="examples-section">
+                        <div class="input-title">
+                            <i class="fas fa-bolt"></i>
+                            <span>Quick Examples</span>
+                        </div>
+                        <div class="examples-grid">
+                            <button class="example-btn" onclick="testSign('hello my name is')">Hello my name is</button>
+                            <button class="example-btn" onclick="testSign('thank you very much')">Thank you very much</button>
+                            <button class="example-btn" onclick="testSign('how are you today')">How are you today</button>
+                            <button class="example-btn" onclick="testSign('what is your name')">What is your name</button>
+                            <button class="example-btn" onclick="testSign('i love programming')">I love programming</button>
+                            <button class="example-btn" onclick="testSign('good morning everyone')">Good morning everyone</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="status-section">
+                        <div class="input-title">
+                            <i class="fas fa-info-circle"></i>
+                            <span>System Status</span>
+                        </div>
+                        <div id="status">
+                            Loading signs from database...
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="copyright">
+                    © 2024 ASL Translator Pro. All rights reserved.
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Documentation</a>
+                    <a href="#" class="footer-link">Support</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script type="text/javascript">
+        // Core variables
+        var playingTimeout;
+        var stopRequested = false;
+        var categories = {};
+        var cwasaInitialized = false;
+        var baseUrl = window.location.origin;
+        var allSigns = [];
+        
+        // Speed control
+        var currentSpeed = 1.0;
+        var signDelay = 1500;
+        var letterDelay = 1200;
+        
+        // Voice recognition
+        var recognition = null;
+        var isListening = false;
+        var voiceBars = [];
+        
+        // Initialize when page loads
+        window.onload = function() {
+            console.log("=== ASL Translator Pro Initialization ===");
+            
+            // Initialize voice visualization
+            initVoiceVisualizer();
+            
+            // Load signs from database
+            loadAllSigns().then(() => {
+                // Initialize CWASA
+                if (typeof CWASA !== 'undefined') {
+                    try {
+                        CWASA.init();
+                        cwasaInitialized = true;
+                        console.log("CWASA initialized successfully");
+                        updateStatus("✓ System ready | " + allSigns.length + " signs loaded | Speed: Normal");
+                        updateSignCount();
+                    } catch (error) {
+                        console.error("Error initializing CWASA:", error);
+                        updateStatus("✗ Avatar initialization failed");
+                    }
+                } else {
+                    console.error("CWASA is not defined");
+                    updateStatus("✗ Avatar library not loaded");
+                }
+            }).catch(error => {
+                console.error("Failed to load signs:", error);
+                updateStatus("⚠ Using fallback mode");
+                
+                if (typeof CWASA !== 'undefined') {
+                    CWASA.init();
+                    cwasaInitialized = true;
+                }
+            });
+            
+            // Update speed display
+            updateSpeedDisplay();
+            
+            // Initialize Web Speech API
+            initSpeechRecognition();
+        };
+        
+        // Initialize voice visualizer
+        function initVoiceVisualizer() {
+            const voiceWave = document.getElementById('voiceWave');
+            voiceWave.innerHTML = '';
+            voiceBars = [];
+            
+            // Create 30 bars for visualization
+            for (let i = 0; i < 30; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'voice-bar';
+                bar.style.height = '20%';
+                voiceWave.appendChild(bar);
+                voiceBars.push(bar);
+            }
+        }
+        
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    console.log("Voice recognition started");
+                    isListening = true;
+                    document.getElementById('voiceBtn').classList.add('listening');
+                    document.getElementById('voiceStatus').textContent = "Listening... Speak now";
+                    updateVoiceVisualization(true);
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    console.log("Voice input:", transcript);
+                    document.getElementById('glossInput').value = transcript;
+                    document.getElementById('voiceStatus').textContent = "Recognized: " + transcript;
+                    
+                    // Auto-play after short delay
+                    setTimeout(() => {
+                        playGloss();
+                    }, 500);
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error("Speech recognition error:", event.error);
+                    document.getElementById('voiceStatus').textContent = "Error: " + event.error;
+                    stopVoiceRecognition();
+                };
+                
+                recognition.onend = function() {
+                    console.log("Voice recognition ended");
+                    stopVoiceRecognition();
+                };
+                
+                updateStatus("✓ Voice recognition available");
+            } else {
+                console.warn("Speech recognition not supported");
+                document.getElementById('voiceStatus').textContent = "Voice recognition not supported in your browser";
+                updateStatus("⚠ Voice recognition not available");
+            }
+        }
+        
+        // Toggle voice recognition
+        function toggleVoiceRecognition() {
+            if (!recognition) {
+                alert("Voice recognition is not supported in your browser.");
+                return;
+            }
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error("Failed to start recognition:", error);
+                    updateStatus("✗ Failed to start voice recognition");
+                }
+            }
+        }
+        
+        // Stop voice recognition
+        function stopVoiceRecognition() {
+            isListening = false;
+            document.getElementById('voiceBtn').classList.remove('listening');
+            document.getElementById('voiceStatus').textContent = "Click microphone to start speaking";
+            updateVoiceVisualization(false);
+        }
+        
+        // Update voice visualization
+        function updateVoiceVisualization(listening) {
+            if (listening) {
+                // Animate bars
+                const interval = setInterval(() => {
+                    if (!isListening) {
+                        clearInterval(interval);
+                        return;
+                    }
+                    
+                    voiceBars.forEach(bar => {
+                        const height = Math.random() * 80 + 10;
+                        bar.style.height = height + '%';
+                        bar.style.transition = 'height 0.1s';
+                    });
+                }, 100);
+            } else {
+                // Reset bars
+                voiceBars.forEach(bar => {
+                    bar.style.height = '20%';
+                });
+            }
+        }
+        
+        // Set input mode (text/voice)
+        function setInputMode(mode) {
+            const textBtn = document.querySelector('.mode-btn:nth-child(1)');
+            const voiceBtn = document.querySelector('.mode-btn:nth-child(2)');
+            const textContainer = document.getElementById('textInputContainer');
+            const voiceContainer = document.getElementById('voiceInputContainer');
+            
+            if (mode === 'text') {
+                textBtn.classList.add('active');
+                voiceBtn.classList.remove('active');
+                textContainer.style.display = 'block';
+                voiceContainer.style.display = 'none';
+            } else {
+                textBtn.classList.remove('active');
+                voiceBtn.classList.add('active');
+                textContainer.style.display = 'none';
+                voiceContainer.style.display = 'block';
+                
+                // Stop any ongoing recognition
+                if (isListening) {
+                    recognition.stop();
+                }
+            }
+        }
+        
+        // SPEED CONTROL FUNCTIONS
+        function setSpeed(speed) {
+            currentSpeed = speed;
+            signDelay = Math.round(1500 / speed);
+            letterDelay = Math.round(1200 / speed);
+            
+            console.log(`Speed set to: ${speed}x`);
+            updateStatus(`Speed set to: ${getSpeedName(speed)} (${speed}x)`);
+            updateSpeedDisplay();
+            updateSpeedButtons();
+        }
+        
+        function getSpeedName(speed) {
+            switch(speed) {
+                case 0.5: return "Very Slow";
+                case 0.75: return "Slow";
+                case 1.0: return "Normal";
+                case 1.5: return "Fast";
+                case 2.0: return "Very Fast";
+                default: return "Custom";
+            }
+        }
+        
+        function updateSpeedDisplay() {
+            const speedValue = document.getElementById('speedValue');
+            const speedDisplay = document.getElementById('speedDisplay');
+            
+            if (speedValue) {
+                speedValue.textContent = currentSpeed.toFixed(1) + "x";
+                speedValue.className = "speed-value";
+            }
+            
+            if (speedDisplay) {
+                speedDisplay.textContent = currentSpeed.toFixed(1) + "x";
+            }
+        }
+        
+        function updateSpeedButtons() {
+            const speedButtons = document.querySelectorAll('.speed-btn');
+            speedButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (parseFloat(btn.getAttribute('data-speed')) === currentSpeed) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function updateSignCount() {
+            const signCount = document.getElementById('signCount');
+            if (signCount && allSigns.length > 0) {
+                signCount.textContent = allSigns.length;
+            }
+        }
+        
+        // Load all signs from database
+        async function loadAllSigns() {
+            try {
+                console.log("Loading all signs from database...");
+                
+                const response = await fetch(`${baseUrl}/api/signs/`);
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const signsData = await response.json();
+                console.log(`Loaded ${signsData.length} signs from database`);
+                
+                allSigns = signsData.map(sign => sign.word.toLowerCase());
+                categories = { "All Signs": allSigns.sort() };
+                
+                populateSearchDropdown();
+                updateStatus("✓ " + allSigns.length + " signs loaded from database");
+                updateSignCount();
+                
+            } catch (error) {
+                console.error("Error loading signs:", error);
+                updateStatus("⚠ Error loading signs, using fallback");
+                
+                // Fallback
+                allSigns = ["hello", "thank you", "yes", "no", "a", "b", "c", "my", "name", "is", "what", "how", "are", "you"];
+                categories = { "Basic": allSigns };
+                populateSearchDropdown();
+                updateSignCount();
+            }
+        }
+        
+        function populateSearchDropdown() {
+            const searchDatalist = document.getElementById("signSuggestions");
+            if (!searchDatalist) return;
+            
+            searchDatalist.innerHTML = "";
+            allSigns.forEach(sign => {
+                const option = document.createElement("option");
+                option.value = sign;
+                searchDatalist.appendChild(option);
+            });
+        }
+        
+        // All other functions remain the same as before
+        // (playSiGML, playGloss, parseSentence, processTokensSequentially, signWord, spellWordLetterByLetter, delay, getSigmlUrl, spellWord, updateCurrentSign, updateStatus, resetGloss, testSign)
+        // ... [Rest of the JavaScript functions from previous version]
+
+        // SPEED CONTROL FUNCTIONS
+        function setSpeed(speed) {
+            currentSpeed = speed;
+            
+            // Calculate delays based on speed
+            // Faster speed = shorter delays, slower speed = longer delays
+            signDelay = Math.round(1500 / speed);
+            letterDelay = Math.round(1200 / speed);
+            
+            console.log(`Speed set to: ${speed}x | Sign delay: ${signDelay}ms | Letter delay: ${letterDelay}ms`);
+            updateStatus(`Speed set to: ${getSpeedName(speed)}`);
+            updateSpeedDisplay();
+            
+            // Update active button styling
+            updateSpeedButtons();
+        }
+        
+        function getSpeedName(speed) {
+            switch(speed) {
+                case 0.5: return "Very Slow";
+                case 0.75: return "Slow";
+                case 1.0: return "Normal";
+                case 1.5: return "Fast";
+                case 2.0: return "Very Fast";
+                default: return "Custom";
+            }
+        }
+        
+        function updateSpeedDisplay() {
+            var speedDisplay = document.getElementById("speedValue");
+            if (speedDisplay) {
+                speedDisplay.textContent = currentSpeed.toFixed(1) + "x";
+                speedDisplay.className = "speed-value speed-" + (currentSpeed * 10);
+            }
+        }
+        
+        function updateSpeedButtons() {
+            // Remove active class from all speed buttons
+            var speedButtons = document.querySelectorAll('.speed-button');
+            speedButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to current speed button
+            var activeBtn = document.querySelector(`.speed-button[data-speed="${currentSpeed}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+        
+        // Load ALL signs from database - NO CATEGORIES FILE NEEDED
+        async function loadAllSigns() {
+            try {
+                console.log("Loading all signs from database...");
+                
+                // Fetch all signs from API
+                const response = await fetch(`${baseUrl}/api/signs/`);
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const signsData = await response.json();
+                console.log(`Loaded ${signsData.length} signs from database`);
+                
+                // Create a simple "All Signs" category
+                allSigns = signsData.map(sign => sign.word.toLowerCase());
+                categories = {
+                    "All Signs": allSigns.sort()
+                };
+                
+                // Populate searchable dropdown
+                populateSearchDropdown();
+                updateStatus("✓ " + allSigns.length + " signs loaded from database");
+                
+            } catch (error) {
+                console.error("Error loading signs:", error);
+                
+                // Fallback: Try to load from categories file
+                try {
+                    const fallbackResponse = await fetch('/static/data/categories_files.json');
+                    if (fallbackResponse.ok) {
+                        const fallbackData = await fallbackResponse.json();
+                        allSigns = [];
+                        for (const category in fallbackData) {
+                            allSigns = allSigns.concat(fallbackData[category]);
+                        }
+                        categories = fallbackData;
+                        populateSearchDropdown();
+                        updateStatus("⚠ Using categories file: " + allSigns.length + " signs");
+                    } else {
+                        throw new Error('No fallback available');
+                    }
+                } catch (fallbackError) {
+                    // Ultimate fallback
+                    allSigns = ["hello", "thank you", "yes", "no", "a", "b", "c", "my", "name", "is", "what", "how", "are", "you"];
+                    categories = { "Basic": allSigns };
+                    populateSearchDropdown();
+                    updateStatus("⚠ Using basic fallback signs");
+                }
+            }
+        }
+
+        // Populate searchable dropdown
+        function populateSearchDropdown() {
+            const searchDatalist = document.getElementById("signSuggestions");
+            if (!searchDatalist) return;
+            
+            searchDatalist.innerHTML = "";
+            
+            // Add all signs to datalist
+            allSigns.forEach(sign => {
+                const option = document.createElement("option");
+                option.value = sign;
+                searchDatalist.appendChild(option);
+            });
+            
+            console.log("Populated search with", allSigns.length, "signs");
+        }
+
+        // Simple play function
+        function playSiGML(sigmlURL) {
+            console.log("Playing SiGML:", sigmlURL, "at speed:", currentSpeed);
+            
+            if (!cwasaInitialized) {
+                alert("Avatar not ready yet. Please wait for initialization.");
+                return;
+            }
+            
+            if (typeof CWASA !== 'undefined' && typeof CWASA.playSiGMLURL === 'function') {
+                try {
+                    // Try to set playback speed if the CWA library supports it
+                    if (typeof CWASA.setPlaybackSpeed === 'function') {
+                        CWASA.setPlaybackSpeed(currentSpeed);
+                    }
+                    
+                    CWASA.playSiGMLURL(sigmlURL);
+                    updateStatus(`Playing sign at ${currentSpeed.toFixed(1)}x speed...`);
+                } catch (error) {
+                    console.error("Error playing SiGML:", error);
+                    updateStatus("✗ Error playing sign");
+                }
+            }
+        }
+
+        // MAIN FUNCTION: Handle sentences with signing AND spelling
+        async function playGloss() {
+            if (!cwasaInitialized) {
+                alert("Avatar is still initializing. Please wait...");
+                return;
+            }
+            
+            stopRequested = false;
+            var inputText = document.getElementById("glossInput").value.trim();
+            
+            if (!inputText) {
+                alert("Please enter text to translate");
+                return;
+            }
+            
+            console.log("Processing sentence:", inputText, "at speed:", currentSpeed);
+            updateStatus(`Processing: ${inputText} (${currentSpeed.toFixed(1)}x)`);
+            
+            // Parse the sentence into tokens
+            var tokens = parseSentence(inputText);
+            
+            if (tokens.length === 0) {
+                alert("Nothing to sign/spell");
+                updateStatus("✗ Nothing to sign/spell");
+                return;
+            }
+            
+            console.log("Parsed tokens:", tokens);
+            updateStatus(`Found ${tokens.length} items to process (${currentSpeed.toFixed(1)}x)`);
+            
+            // Process tokens sequentially
+            await processTokensSequentially(tokens, 0);
+        }
+
+        // Parse sentence into tokens (words and punctuation)
+        function parseSentence(text) {
+            // Clean and normalize text
+            text = text.toLowerCase().trim();
+            
+            // Split by spaces and punctuation, but keep punctuation separate
+            var tokens = [];
+            var currentToken = '';
+            
+            for (var i = 0; i < text.length; i++) {
+                var char = text[i];
+                
+                // If it's a letter, add to current token
+                if (/[a-z]/.test(char)) {
+                    currentToken += char;
+                }
+                // If it's punctuation or space
+                else if (/[\s,\.!?]/.test(char)) {
+                    // Add the current token if exists
+                    if (currentToken) {
+                        tokens.push(currentToken);
+                        currentToken = '';
+                    }
+                    
+                    // Add punctuation as separate token (optional, you can skip if you want)
+                    if (char !== ' ') {
+                        tokens.push(char);
+                    }
+                }
+            }
+            
+            // Add the last token if exists
+            if (currentToken) {
+                tokens.push(currentToken);
+            }
+            
+            return tokens.filter(token => token.trim() !== '');
+        }
+
+        // Process tokens sequentially (sign known words, spell unknown ones)
+        async function processTokensSequentially(tokens, index) {
+            if (index >= tokens.length || stopRequested) {
+                updateStatus(`✓ Finished signing/spelling (${currentSpeed.toFixed(1)}x)`);
+                updateCurrentSign("", 0, 0); // Hide current sign display
+                return;
+            }
+            
+            var token = tokens[index];
+            var total = tokens.length;
+            
+            // Determine if token is known word or needs spelling
+            var isKnownWord = allSigns.includes(token);
+            var isLetter = token.length === 1 && /[a-z]/.test(token);
+            
+            // Update display
+            var displayText = "";
+            if (isKnownWord) {
+                displayText = `Signing: "${token}"`;
+            } else if (isLetter) {
+                displayText = `Spelling letter: "${token.toUpperCase()}"`;
+            } else {
+                displayText = `Spelling word: "${token}"`;
+            }
+            
+            updateCurrentSign(displayText + ` (${index + 1}/${total}) | Speed: ${currentSpeed.toFixed(1)}x`, index + 1, total);
+            updateStatus(`${displayText} (${currentSpeed.toFixed(1)}x)`);
+            
+            // Process based on type
+            if (isKnownWord) {
+                // Sign the known word
+                await signWord(token);
+            } else if (isLetter && allSigns.includes(token)) {
+                // Sign the single letter (if it exists in database)
+                await signWord(token);
+            } else {
+                // Spell the unknown word letter by letter
+                await spellWordLetterByLetter(token);
+            }
+            
+            // Wait a bit between tokens (adjust timing based on speed)
+            playingTimeout = setTimeout(async () => {
+                await processTokensSequentially(tokens, index + 1);
+            }, signDelay); // Dynamic delay based on speed
+        }
+
+        // Sign a single word
+        async function signWord(word) {
+            console.log("Signing word:", word, "at speed:", currentSpeed);
+            
+            var sigmlUrl = await getSigmlUrl(word);
+            if (!sigmlUrl) {
+                // If no SiGML found, try spelling the word
+                console.log("No SiGML found for", word, "- spelling instead");
+                await spellWordLetterByLetter(word);
+                return;
+            }
+            
+            console.log("Loading SiGML from:", sigmlUrl);
+            playSiGML(sigmlUrl);
+        }
+
+        // Spell a word letter by letter
+        async function spellWordLetterByLetter(word) {
+            console.log("Spelling word:", word, "at speed:", currentSpeed);
+            
+            var letters = word.toLowerCase().split('').filter(l => /[a-z]/.test(l));
+            
+            if (letters.length === 0) {
+                console.log("No letters to spell in:", word);
+                return;
+            }
+            
+            for (var i = 0; i < letters.length; i++) {
+                if (stopRequested) break;
+                
+                var letter = letters[i];
+                var subDisplay = `Spelling "${word}": ${letter.toUpperCase()} (${i + 1}/${letters.length}) (${currentSpeed.toFixed(1)}x)`;
+                updateStatus(subDisplay);
+                
+                // Try to get SiGML for the letter
+                var sigmlUrl = await getSigmlUrl(letter);
+                if (sigmlUrl) {
+                    playSiGML(sigmlUrl);
+                } else {
+                    console.log("No SiGML for letter:", letter);
+                }
+                
+                // Wait between letters (use promise for sequential execution)
+                await delay(letterDelay); // Dynamic delay based on speed
+            }
+        }
+
+        // Helper function for delay
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Get SiGML URL
+        async function getSigmlUrl(gloss) {
+            // Clean the gloss
+            var cleanGloss = gloss.toLowerCase().replace(/ /g, '_');
+            
+            // Try API first
+            try {
+                const response = await fetch(`${baseUrl}/api/signs/${encodeURIComponent(gloss)}/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.sigml_file_url;
+                }
+            } catch (error) {
+                console.log("API error for", gloss, ":", error);
+            }
+            
+            // Fallback to local file
+            return '/media/sigml/' + cleanGloss + '.sigml';
+        }
+
+        // Original spellWord function (for the Spell It button)
+        async function spellWord() {
+            if (!cwasaInitialized) {
+                alert("Avatar not ready yet");
+                return;
+            }
+            
+            var text = document.getElementById("glossInput").value.trim();
+            if (!text) {
+                alert("Please enter text to spell");
+                return;
+            }
+            
+            console.log("Spelling:", text, "at speed:", currentSpeed);
+            stopRequested = false;
+            
+            // Parse and spell
+            var tokens = parseSentence(text);
+            await processTokensSequentially(tokens, 0);
+        }
+
+        // Update displays
+        function updateCurrentSign(gloss, current, total) {
+            var display = document.getElementById("currentSign");
+            if (display) {
+                if (gloss) {
+                    display.textContent = gloss;
+                    display.style.display = "block";
+                } else {
+                    display.style.display = "none";
+                }
+            }
+        }
+
+        function updateStatus(message) {
+            var statusDiv = document.getElementById("status");
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.style.color = message.startsWith("✓") ? "#4CAF50" :
+                                      message.startsWith("✗") ? "#f44336" :
+                                      message.startsWith("⚠") ? "#ff9800" : "#2196F3";
+            }
+        }
+
+        function resetGloss() {
+            stopRequested = true;
+            clearTimeout(playingTimeout);
+            
+            var display = document.getElementById("currentSign");
+            if (display) display.style.display = "none";
+            
+            if (cwasaInitialized && typeof CWASA !== 'undefined' && typeof CWASA.stop === 'function') {
+                try {
+                    CWASA.stop();
+                    updateStatus(`Ready | Speed: ${getSpeedName(currentSpeed)} (${currentSpeed.toFixed(1)}x)`);
+                } catch (e) {
+                    console.warn("Could not stop avatar:", e);
+                }
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement.id === 'glossInput') {
+                e.preventDefault();
+                playGloss();
+            }
+            if (e.key === 'Escape') {
+                resetGloss();
+            }
+            // Speed control keyboard shortcuts
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1': setSpeed(0.5); e.preventDefault(); break;
+                    case '2': setSpeed(0.75); e.preventDefault(); break;
+                    case '3': setSpeed(1.0); e.preventDefault(); break;
+                    case '4': setSpeed(1.5); e.preventDefault(); break;
+                    case '5': setSpeed(2.0); e.preventDefault(); break;
+                    case '+': 
+                    case '=':
+                        if (currentSpeed < 2.0) setSpeed(Math.min(currentSpeed + 0.25, 2.0));
+                        e.preventDefault();
+                        break;
+                    case '-':
+                    case '_':
+                        if (currentSpeed > 0.25) setSpeed(Math.max(currentSpeed - 0.25, 0.25));
+                        e.preventDefault();
+                        break;
+                }
+            }
+        });
+
+        // Quick test buttons with sentences
+        function testSign(sign) {
+            document.getElementById("glossInput").value = sign;
+            playGloss();
+        }
+
+
+    </script>
+</body>
+</html>

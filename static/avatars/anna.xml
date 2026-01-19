@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<avatar name="anna" version="1.0">
+    <description>Anna - Female Signing Avatar</description>
+    <resources>
+        <jar>anna.jar</jar>
+        <texture>anna_texture.png</texture>
+        <config>anna_config.xml</config>
+    </resources>
+    <settings>
+        <height>170</height>
+        <scale>1.0</scale>
+        <fps>30</fps>
+    </settings>
+    <animations>
+        <default>idle</default>
+        <ambient>breathing</ambient>
+    </animations>
+</avatar>

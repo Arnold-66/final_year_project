@@ -1,0 +1,42 @@
+{
+  "description": "CWA Configuration for ASL Translator Pro",
+  "signingAvatarCfg": "/static/cwa/signingavatar/signingavatar_config.xml",
+  "signingAvatarDir": "/static/cwa/signingavatar",
+  "signingAvatarURL": "/static/cwa/signingavatar",
+  "useProxy": false,
+  "proxy": "",
+  "logging": {
+    "level": "info",
+    "console": true
+  },
+  "avatar": {
+    "default": "anna",
+    "available": ["anna", "pablo", "marc"],
+    "baseURL": "/static/avatars/",
+    "jarURL": "/static/avatars/",
+    "xmlURL": "/static/avatars/",
+    "mappings": {
+      "anna": {
+        "jar": "anna.jar",
+        "xml": "anna.xml"
+      },
+      "pablo": {
+        "jar": "pablo.jar",
+        "xml": "pablo.xml"
+      },
+      "marc": {
+        "jar": "marc.jar",
+        "xml": "marc.xml"
+      }
+    }
+  },
+  "animation": {
+    "smoothTransitions": true,
+    "defaultSpeed": 1.0,
+    "ambientAnimation": true
+  },
+  "useLocalAvatar": true,
+  "localAvatarPath": "/static/avatars",
+  "enableCache": true,
+  "crossOrigin": false
+}

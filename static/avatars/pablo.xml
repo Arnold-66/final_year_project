@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<avatar name="pablo" version="1.0">
+    <description>Pablo - Male Signing Avatar</description>
+    <resources>
+        <jar>pablo.jar</jar>
+        <texture>pablo_texture.png</texture>
+        <config>pablo_config.xml</config>
+    </resources>
+    <settings>
+        <height>180</height>
+        <scale>1.0</scale>
+        <fps>30</fps>
+    </settings>
+    <animations>
+        <default>idle</default>
+        <ambient>breathing</ambient>
+    </animations>
+</avatar>

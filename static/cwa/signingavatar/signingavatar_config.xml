@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<signingavatars>
+    <signingavatar name="anna" avatarfile="anna.xml" faceskin="Default" 
+                   hairskin="BrunetteLong" outfitskin="Casual" height="170" 
+                   glscale="0.065" gltranslate="-0.18 -2.35 -2.7" 
+                   glrotate="0 1 0 180" glrotate2="1 0 0 -40" 
+                   glrotate3="0 0 1 0" glambient="0.6 0.6 0.6" 
+                   gldiffuse="0.8 0.8 0.8" glspecular="0.2 0.2 0.2"/>
+    
+    <signingavatar name="pablo" avatarfile="pablo.xml" faceskin="Default" 
+                   hairskin="ShortDark" outfitskin="Casual" height="180" 
+                   glscale="0.065" gltranslate="-0.18 -2.35 -2.7" 
+                   glrotate="0 1 0 180" glrotate2="1 0 0 -40" 
+                   glrotate3="0 0 1 0" glambient="0.6 0.6 0.6" 
+                   gldiffuse="0.8 0.8 0.8" glspecular="0.2 0.2 0.2"/>
+    
+    <signingavatar name="marc" avatarfile="marc.xml" faceskin="Default" 
+                   hairskin="ShortDark" outfitskin="Casual" height="175" 
+                   glscale="0.065" gltranslate="-0.18 -2.35 -2.7" 
+                   glrotate="0 1 0 180" glrotate2="1 0 0 -40" 
+                   glrotate3="0 0 1 0" glambient="0.6 0.6 0.6" 
+                   gldiffuse="0.8 0.8 0.8" glspecular="0.2 0.2 0.2"/>
+</signingavatars>
